@@ -2,14 +2,15 @@ module Sequel
   module Plugins
     module Enum
       def self.apply(model, opts = OPTS)
+        model.instance_eval do
+          @enums = {}
+        end
       end
 
       module ClassMethods
-        attr_accessor :enums
+        attr_reader :enums
 
         def enum(column, values)
-          self.enums = {}
-
           if values.is_a? Hash
             values.each do |key,val|
               raise ArgumentError, "index should be a symbol, #{key} provided which it's a #{key.class}" unless key.is_a? Symbol
@@ -48,7 +49,7 @@ module Sequel
               self.send(column) == key
             end
           end
-          self.enums[column] = values
+          enums[column] = values
         end
       end
     end
