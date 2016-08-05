@@ -31,7 +31,7 @@ module Sequel
           end
 
           define_method "#{column}=" do |value|
-            index = self.class.enums[column].assoc(value)
+            index = self.class.enums[column].assoc(value.to_sym)
             @value = (index && index.first)
             self[column] = self.class.enums[column].fetch(@value, nil)
           end
