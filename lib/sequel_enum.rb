@@ -22,26 +22,15 @@ module Sequel
             raise ArgumentError, "#enum expects the second argument to be an array of symbols or a hash like { :literal => number }"
           end
 
-          define_method :[]= do |key, value|
-            if column.to_sym == key.to_sym
-              index = self.class.enums[column].rassoc(value)
-              @value = (index && index.first)
-            end
-            super(key, value)
-          end
-
           define_method "#{column}=" do |value|
             index = self.class.enums[column].assoc(value.to_sym)
-            @value = (index && index.first)
-            self[column] = self.class.enums[column].fetch(@value, nil)
+            value_index = (index && index.first)
+            self[column] = self.class.enums[column].fetch(value_index, nil)
           end
 
           define_method "#{column}" do
-            unless @value
-              index = self.class.enums[column].rassoc(self[column])
-              @value = (index && index.first)
-            end
-            @value
+            index = self.class.enums[column].rassoc(self[column])
+            index && index.first
           end
 
           values.each do |key, value|
